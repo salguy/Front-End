@@ -1,45 +1,128 @@
+import { useEffect, useState } from "react"
+import faceImg from './face.jpg';
+import mailImg from './mail-01.png';
+import phoneImg from './phone.png';
+import sunImg from './sun.png';
+import settingImg from './settings-02.png';
+import announceImg from './announcement-01.png';
+import sirenImg from './Frame 1707488126.png';
+
 export default function Home() {
-    return (
-      <div className="grid grid-cols-12 h-screen text-gray-800 font-sans">
-  
-        {/* 왼쪽: 프로필 + 버튼 */}
-        <div className="col-span-2 flex flex-col items-center justify-between py-6 bg-gradient-to-b from-gray-100 to-white">
-          <div className="flex flex-col items-center">
-            <img src="https://via.placeholder.com/60" className="w-14 h-14 rounded-full mb-4 border" />
-            <div className="text-xs font-medium text-center">양예순</div>
-          </div>
-          <div className="flex flex-col items-center space-y-6">
-            <button className="w-10 h-10 bg-gray-200 rounded-full">📩</button>
-            <button className="w-10 h-10 bg-gray-200 rounded-full">📞</button>
-            <button className="w-10 h-10 bg-red-200 rounded-full">🚨</button>
-          </div>
+  const [message, setMessage] = useState("도움이 필요하시면 불러주세요") // 기본 메시지
+  const [currentTime, setCurrentTime] = useState<string>("");
+  const [currentDate, setCurrentDate] = useState("");
+  const [ampm, timeOnly] = currentTime.split(" ");
+
+  const API_URL = import.meta.env.VITE_API_URL
+  const userId = "2"
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${API_URL}/api/events/${userId}`)
+
+    eventSource.onmessage = (event) => {
+      console.log("Event received:", event.data)
+      setMessage(event.data)
+    }
+
+    return () => {
+      eventSource.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const updateTimeAndDate = () => {
+      const now = new Date();
+
+      // 시간
+      const hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const ampm = hours >= 12 ? "오후" : "오전";
+      const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+      setCurrentTime(`${ampm} ${displayHour}:${minutes}`);
+
+      // 날짜
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const weekdayNames = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+      const weekday = weekdayNames[now.getDay()];
+      setCurrentDate(`${month}월 ${date}일 ${weekday}`);
+    };
+
+    updateTimeAndDate(); // 처음 실행
+    const interval = setInterval(updateTimeAndDate, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative w-screen h-screen grid grid-cols-12 bg-white text-gray-800">
+
+      {/* 좌측 사이드바 */}
+      <div className="col-span-2 bg-gradient-to-b flex flex-col items-center justify-between py-8 z-10">
+        {/* 프로필 */}
+        <div className="flex flex-col items-center">
+          <img src={faceImg} alt="profile" className="w-16 h-16 rounded-full mb-2" />
+          <div className="text-sm font-semibold">양애순</div>
         </div>
-  
-        {/* 가운데 캐릭터 + 말풍선 */}
-        <div className="col-span-8 flex flex-col items-center justify-center relative">
-          <div className="absolute top-6 right-6 text-right text-sm">
-            <div className="text-lg font-semibold">오후 06:27</div>
-            <div className="text-xs text-gray-500">4월 15일 수요일</div>
-          </div>
-          <div className="w-64 h-64 bg-gray-200 rounded-full flex items-center justify-center shadow-inner text-4xl">
-            😊
-          </div>
-          <div className="mt-6 px-6 py-3 rounded-full bg-white shadow-md border text-center text-sm leading-tight">
-            죄송해요 할머니<br />
-            다시 말씀해주시겠어요?
-          </div>
+
+        {/* 버튼 목록 */}
+        <div className="flex flex-col items-center gap-6">
+          <button className="w-24 h-24 bg-[#FAFAFA] border-2 border-[#A7ACB0] rounded-full flex items-center justify-center">
+            <img src={mailImg} alt="편지" className="w-12 h-12" />
+          </button>
+          <button className="w-24 h-24 bg-[#FAFAFA] border-2 border-[#A7ACB0] rounded-full flex items-center justify-center">
+            <img src={phoneImg} alt="전화" className="w-12 h-12" />
+          </button>
         </div>
-  
-        {/* 오른쪽 밝기/설정 */}
-        <div className="col-span-2 flex flex-col items-center justify-between py-6">
-          <div className="flex flex-col items-center space-y-2 text-sm">
-            <span>밝게</span>
-            <input type="range" min={1} max={100} defaultValue={40} className="rotate-[-90deg] h-28" />
-            <span>어둡게</span>
-          </div>
-          <button className="w-10 h-10 bg-gray-200 rounded-full">⚙️</button>
+        <div>
+          <button className="w-24 h-24 bg-[#FAFAFA] border-2 border-[#ECA5A5] rounded-full flex items-center justify-center">
+            <img src={sirenImg} alt="사이렌" className="w-12 h-12" />
+          </button>
         </div>
       </div>
-    )
-  }
-  
+
+      {/* 중앙 캐릭터 + 말풍선 */}
+      <div className="col-span-8 flex flex-col items-center justify-center relative">
+        {/* 오른쪽 위 시간/날짜 */}
+
+
+        {/* 캐릭터 */}
+        <div className="w-[600px] h-[600px] bg-gray-200 rounded-full flex items-center justify-center shadow-inner mb-8 z-10">
+          <img src={faceImg} alt="character" className="w-70 h-70 rounded-full" />
+        </div>
+
+        {/* 말풍선 */}
+        <div className="absolute bottom-20 px-10 py-4 w-[948px] h-[184px] bg-white rounded-full shadow-md border flex text-center items-center justify-center text-[54px] font-medium leading-tight z-10">
+          {message}
+        </div>
+      </div>
+
+      {/* 우측 슬라이더 + 설정 */}
+      <div className="col-span-2 flex flex-col items-end text-right justify-between py-6 z-10 pr-24">
+
+        <div className="flex flex-col top-8 right-8">
+          <div className=" w-[218px] h-[56px]">  
+            <span className="text-l text-gray-400 mr-1">{ampm}</span>
+            <span className="text-xl font-bold text-gray-800">{timeOnly}</span>
+          </div>
+          <div className="text-xs text-[#9CA4A8] w-[218px] h-[30px]">{currentDate}</div>
+        </div>
+
+        <div className="flex flex-col items-center gap-6">
+          <button className="w-24 h-24 bg-[#E7E7E7] border-2 border-[#D8D8D8] rounded-full flex items-center justify-center text-xl">
+            <img src={sunImg} alt="밝기" className="w-12 h-12" />
+          </button>
+          <button className="w-24 h-24 bg-[#E7E7E7] border-2 border-[#D8D8D8] rounded-full flex items-center justify-center text-xl">
+            <img src={announceImg} alt="소리" className="w-12 h-12" />
+          </button>
+        </div>
+        <div>
+          <button className="w-24 h-24 bg-[#E7E7E7] border-2 border-[#B4BBBE] rounded-full flex items-center justify-center">
+            <img src={settingImg} alt="설정" className="w-12 h-12" />
+          </button>
+        </div>      
+      </div>
+      <div className="absolute bottom-0 left-0 w-full h-[61vh] bg-gradient-to-b from-[#FFFFFF] to-[#C6CBD0] z-0"></div>
+
+    </div>
+  );
+}
