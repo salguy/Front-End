@@ -6,6 +6,8 @@ import sunImg from './sun.png';
 import settingImg from './settings-02.png';
 import announceImg from './announcement-01.png';
 import sirenImg from './Frame 1707488126.png';
+import characterImg from './character.png';
+
 
 export default function Home() {
   const [message, setMessage] = useState("도움이 필요하시면 불러주세요") // 기본 메시지
@@ -66,15 +68,15 @@ export default function Home() {
 
         {/* 버튼 목록 */}
         <div className="flex flex-col items-center gap-6">
-          <button className="w-24 h-24 bg-[#FAFAFA] border-2 border-[#A7ACB0] rounded-full flex items-center justify-center">
+          <button className="w-20 h-20 bg-[#FAFAFA] border-2 border-[#A7ACB0] rounded-full flex items-center justify-center">
             <img src={mailImg} alt="편지" className="w-12 h-12" />
           </button>
-          <button className="w-24 h-24 bg-[#FAFAFA] border-2 border-[#A7ACB0] rounded-full flex items-center justify-center">
+          <button className="w-20 h-20 bg-[#FAFAFA] border-2 border-[#A7ACB0] rounded-full flex items-center justify-center">
             <img src={phoneImg} alt="전화" className="w-12 h-12" />
           </button>
         </div>
         <div>
-          <button className="w-24 h-24 bg-[#FAFAFA] border-2 border-[#ECA5A5] rounded-full flex items-center justify-center">
+          <button className="w-20 h-20 bg-[#FAFAFA] border-2 border-[#ECA5A5] rounded-full flex items-center justify-center">
             <img src={sirenImg} alt="사이렌" className="w-12 h-12" />
           </button>
         </div>
@@ -86,12 +88,12 @@ export default function Home() {
 
 
         {/* 캐릭터 */}
-        <div className="w-[600px] h-[600px] bg-gray-200 rounded-full flex items-center justify-center shadow-inner mb-8 z-10">
-          <img src={faceImg} alt="character" className="w-70 h-70 rounded-full" />
+        <div className="w-[600px] h-[600px] rounded-full flex items-center justify-center mb-8 z-10">
+          <img src={characterImg} alt="character" className="w-70 h-70 rounded-full" />
         </div>
 
         {/* 말풍선 */}
-        <div className="absolute bottom-20 px-10 py-4 w-[948px] h-[184px] bg-white rounded-full shadow-md border flex text-center items-center justify-center text-[54px] font-medium leading-tight z-10">
+        <div className="absolute bottom-20 px-10 py-4 w-[50vw] h-[20vh] bg-white rounded-full shadow-md border flex text-center items-center justify-center text-[35px] font-medium leading-tight z-10">
           {message}
         </div>
       </div>
@@ -101,22 +103,22 @@ export default function Home() {
 
         <div className="flex flex-col top-8 right-8">
           <div className=" w-[218px] h-[56px]">  
-            <span className="text-l text-gray-400 mr-1">{ampm}</span>
-            <span className="text-xl font-bold text-gray-800">{timeOnly}</span>
+            <span className="text-[32px] text-gray-400 mr-1">{ampm}</span>
+            <span className="text-[50px] font-bold text-gray-800">{timeOnly}</span>
           </div>
-          <div className="text-xs text-[#9CA4A8] w-[218px] h-[30px]">{currentDate}</div>
+          <div className="text-[20px] text-[#9CA4A8] w-[218px] h-[30px]">{currentDate}</div>
         </div>
 
         <div className="flex flex-col items-center gap-6">
-          <button className="w-24 h-24 bg-[#E7E7E7] border-2 border-[#D8D8D8] rounded-full flex items-center justify-center text-xl">
+          <button className="w-20 h-20 bg-[#E7E7E7] border-2 border-[#D8D8D8] rounded-full flex items-center justify-center text-xl">
             <img src={sunImg} alt="밝기" className="w-12 h-12" />
           </button>
-          <button className="w-24 h-24 bg-[#E7E7E7] border-2 border-[#D8D8D8] rounded-full flex items-center justify-center text-xl">
+          <button className="w-20 h-20 bg-[#E7E7E7] border-2 border-[#D8D8D8] rounded-full flex items-center justify-center text-xl">
             <img src={announceImg} alt="소리" className="w-12 h-12" />
           </button>
         </div>
         <div>
-          <button className="w-24 h-24 bg-[#E7E7E7] border-2 border-[#B4BBBE] rounded-full flex items-center justify-center">
+          <button className="w-20 h-20 bg-[#E7E7E7] border-2 border-[#B4BBBE] rounded-full flex items-center justify-center">
             <img src={settingImg} alt="설정" className="w-12 h-12" />
           </button>
         </div>      
