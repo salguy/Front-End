@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import faceImg from './face.jpg';
+//import faceImg from './face.jpg';
 import mailImg from './mail-01.png';
 import phoneImg from './phone.png';
 import sunImg from './sun.png';
