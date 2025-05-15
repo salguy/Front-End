@@ -8,6 +8,11 @@ import announceImg from './announcement-01.png';
 import sirenImg from './Frame 1707488126.png';
 import characterImg from './character.png';
 
+interface UserInfo {
+  user_id: number;
+  name: string;
+  profile_img: string;
+}
 
 export default function Home() {
   const [message, setMessage] = useState("도움이 필요하시면 불러주세요") // 기본 메시지
@@ -16,10 +21,27 @@ export default function Home() {
   const [ampm, timeOnly] = currentTime.split(" ");
 
   const API_URL = import.meta.env.VITE_API_URL
-  const userId = "2"
+  const user_id = localStorage.getItem("user_id");
+
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   useEffect(() => {
-    const eventSource = new EventSource(`${API_URL}/api/events/${userId}`)
+    fetch(`${API_URL}/api/user/me`, {
+      credentials: "include", // 쿠키 기반 인증
+    })
+      .then((res) => res.json())
+      .then((data: UserInfo) => {
+        setUserInfo(data);
+      })
+      .catch((err) => {
+        console.error("유저 정보 가져오기 실패:", err);
+      });
+  }, []);
+
+  if (!userInfo) return <div>로딩 중...</div>;
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${API_URL}/api/events/${user_id}`)
 
     eventSource.onmessage = (event) => {
       console.log("Event received:", event.data)
@@ -62,8 +84,8 @@ export default function Home() {
       <div className="col-span-2 bg-gradient-to-b flex flex-col items-center justify-between py-8 z-10">
         {/* 프로필 */}
         <div className="flex flex-col items-center">
-          <img src={faceImg} alt="profile" className="w-16 h-16 rounded-full mb-2" />
-          <div className="text-sm font-semibold">양애순</div>
+          <img src={userInfo.profile_img} alt="profile" className="w-16 h-16 rounded-full mb-2" />
+          <div className="text-sm font-semibold">{userInfo.name}</div>
         </div>
 
         {/* 버튼 목록 */}

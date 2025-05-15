@@ -3,5 +3,9 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "jsx": "react-jsx",       // ✅ 또는 "react"
+    "lib": ["DOM", "ESNext"], // ✅ DOM 필수!
+  }
 }
