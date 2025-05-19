@@ -17,5 +17,5 @@ export default function ProtectedRoute({ children }: { children: JSX.Element }) 
   
     if (isLoading) return <div>로딩 중...</div>;
     if (!isAuthenticated) return <Navigate to="/" replace />;
-    return children;
+    return <>{children}</>;
   }

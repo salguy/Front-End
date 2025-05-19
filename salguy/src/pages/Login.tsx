@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function LoginPage() {
+export default function Login() {
   const [user_id, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -21,13 +21,13 @@ export default function LoginPage() {
       const data = await res.json();
       // 예: 토큰 저장 등
       localStorage.setItem("token", data.token);
+      console.log("✅ navigate to /home");
 
       navigate("/home"); // 🔥 성공 시 이동
     } catch (err) {
       alert("로그인 실패");
     }
   };
-  localStorage.setItem("user_id", user_id);
 
 
   return (

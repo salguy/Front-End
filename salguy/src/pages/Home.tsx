@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-//import faceImg from './face.jpg';
 import mailImg from './mail-01.png';
 import phoneImg from './phone.png';
 import sunImg from './sun.png';
@@ -16,14 +15,13 @@ interface UserInfo {
 
 export default function Home() {
   const [message, setMessage] = useState("도움이 필요하시면 불러주세요") // 기본 메시지
-  const [currentTime, setCurrentTime] = useState<string>("");
   const [currentDate, setCurrentDate] = useState("");
-  const [ampm, timeOnly] = currentTime.split(" ");
-
+  const [ampm, setAmpm] = useState("");
+  const [timeOnly, setTimeOnly] = useState("");
   const API_URL = import.meta.env.VITE_API_URL
-  const user_id = localStorage.getItem("user_id");
 
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  console.log("✅ Home.tsx 렌더링 시작");
 
   useEffect(() => {
     fetch(`${API_URL}/api/user/me`, {
@@ -32,26 +30,34 @@ export default function Home() {
       .then((res) => res.json())
       .then((data: UserInfo) => {
         setUserInfo(data);
+        console.log("user info:", data);
+
       })
       .catch((err) => {
         console.error("유저 정보 가져오기 실패:", err);
       });
   }, []);
 
-  if (!userInfo) return <div>로딩 중...</div>;
 
   useEffect(() => {
-    const eventSource = new EventSource(`${API_URL}/api/events/${user_id}`)
-
-    eventSource.onmessage = (event) => {
-      console.log("Event received:", event.data)
-      setMessage(event.data)
-    }
-
-    return () => {
-      eventSource.close()
-    }
-  }, [])
+      if (!userInfo) {
+        console.log("유저 정보가 없습니다. 이벤트 소스를 생성하지 않습니다.");
+        return;
+      }
+  
+      console.log("userInfo???:", userInfo);
+  
+      const eventSource = new EventSource(`${API_URL}/api/events/${userInfo.user_id}`);
+  
+      eventSource.onmessage = (event) => {
+        console.log("Event received:", event.data);
+        setMessage(event.data);
+      };
+  
+      return () => {
+        eventSource.close();
+      };
+    }, [userInfo]);
 
   useEffect(() => {
     const updateTimeAndDate = () => {
@@ -60,10 +66,12 @@ export default function Home() {
       // 시간
       const hours = now.getHours();
       const minutes = now.getMinutes().toString().padStart(2, "0");
-      const ampm = hours >= 12 ? "오후" : "오전";
+      const am = hours >= 12 ? "오후" : "오전";
       const displayHour = hours % 12 === 0 ? 12 : hours % 12;
-      setCurrentTime(`${ampm} ${displayHour}:${minutes}`);
 
+      setAmpm(am);
+      setTimeOnly(`${displayHour}:${minutes}`);
+      
       // 날짜
       const month = now.getMonth() + 1;
       const date = now.getDate();
@@ -72,10 +80,14 @@ export default function Home() {
       setCurrentDate(`${month}월 ${date}일 ${weekday}`);
     };
 
-    updateTimeAndDate(); // 처음 실행
+    updateTimeAndDate(); // 컴포넌트가 마운트될 때 즉시 호출
     const interval = setInterval(updateTimeAndDate, 60000);
     return () => clearInterval(interval);
   }, []);
+
+
+  if (userInfo && userInfo.profile_img) console.log(`Profile Img URL: ${API_URL}${userInfo?.profile_img ?? ""}`)
+  else console.log("Profile Img URL: 없음");
 
   return (
     <div className="relative w-screen h-screen grid grid-cols-12 bg-white text-gray-800">
@@ -83,10 +95,20 @@ export default function Home() {
       {/* 좌측 사이드바 */}
       <div className="col-span-2 bg-gradient-to-b flex flex-col items-center justify-between py-8 z-10">
         {/* 프로필 */}
+        {userInfo && (
         <div className="flex flex-col items-center">
-          <img src={userInfo.profile_img} alt="profile" className="w-16 h-16 rounded-full mb-2" />
-          <div className="text-sm font-semibold">{userInfo.name}</div>
+          {userInfo.profile_img && (
+            <img
+              src={`${API_URL}${userInfo.profile_img}`}
+              alt="profile"
+              className="w-16 h-16 rounded-full mb-2"
+            />
+          )}
+          {userInfo.name && (
+            <div className="text-sm font-semibold">{userInfo.name}</div>
+          )}
         </div>
+        )}
 
         {/* 버튼 목록 */}
         <div className="flex flex-col items-center gap-6">
@@ -124,10 +146,12 @@ export default function Home() {
       <div className="col-span-2 flex flex-col items-end text-right justify-between py-6 z-10 pr-24">
 
         <div className="flex flex-col top-8 right-8">
-          <div className=" w-[218px] h-[56px]">  
-            <span className="text-[32px] text-gray-400 mr-1">{ampm}</span>
-            <span className="text-[50px] font-bold text-gray-800">{timeOnly}</span>
-          </div>
+          {ampm && timeOnly && (
+            <div className="w-[218px] h-[56px]">
+              <span className="text-[32px] text-gray-400 mr-1">{ampm}</span>
+              <span className="text-[50px] font-bold text-gray-800">{timeOnly}</span>
+            </div>
+          )}
           <div className="text-[20px] text-[#9CA4A8] w-[218px] h-[30px]">{currentDate}</div>
         </div>
 
@@ -143,10 +167,11 @@ export default function Home() {
           <button className="w-20 h-20 bg-[#E7E7E7] border-2 border-[#B4BBBE] rounded-full flex items-center justify-center">
             <img src={settingImg} alt="설정" className="w-12 h-12" />
           </button>
-        </div>      
+        </div>
       </div>
       <div className="absolute bottom-0 left-0 w-full h-[61vh] bg-gradient-to-b from-[#FFFFFF] to-[#C6CBD0] z-0"></div>
 
     </div>
   );
+
 }
