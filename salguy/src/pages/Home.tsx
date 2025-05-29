@@ -40,24 +40,24 @@ export default function Home() {
 
 
   useEffect(() => {
-      if (!userInfo) {
-        console.log("유저 정보가 없습니다. 이벤트 소스를 생성하지 않습니다.");
-        return;
-      }
-  
-      console.log("userInfo???:", userInfo);
-  
-      const eventSource = new EventSource(`${API_URL}/api/events/${userInfo.user_id}`);
-  
-      eventSource.onmessage = (event) => {
-        console.log("Event received:", event.data);
-        setMessage(event.data);
-      };
-  
-      return () => {
-        eventSource.close();
-      };
-    }, [userInfo]);
+    if (!userInfo) {
+      console.log("유저 정보가 없습니다. 이벤트 소스를 생성하지 않습니다.");
+      return;
+    }
+
+    console.log("userInfo???:", userInfo);
+
+    const eventSource = new EventSource(`${API_URL}/api/events/${userInfo.user_id}`);
+
+    eventSource.onmessage = (event) => {
+      console.log("Event received:", event.data);
+      setMessage(event.data);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [userInfo]);
 
   useEffect(() => {
     const updateTimeAndDate = () => {
@@ -71,7 +71,7 @@ export default function Home() {
 
       setAmpm(am);
       setTimeOnly(`${displayHour}:${minutes}`);
-      
+
       // 날짜
       const month = now.getMonth() + 1;
       const date = now.getDate();
@@ -91,23 +91,25 @@ export default function Home() {
 
   return (
     <div className="relative w-screen h-screen grid grid-cols-12 bg-white text-gray-800">
-
+      {/* 배경 그라데이션 레이어 */}
+      <div className="absolute bg-custom-diagonal inset-0 z-0"/>
+      
       {/* 좌측 사이드바 */}
       <div className="col-span-2 bg-gradient-to-b flex flex-col items-center justify-between py-8 z-10">
         {/* 프로필 */}
         {userInfo && (
-        <div className="flex flex-col items-center">
-          {userInfo.profile_img && (
-            <img
-              src={`${API_URL}${userInfo.profile_img}`}
-              alt="profile"
-              className="w-16 h-16 rounded-full mb-2"
-            />
-          )}
-          {userInfo.name && (
-            <div className="text-sm font-semibold">{userInfo.name}</div>
-          )}
-        </div>
+          <div className="flex flex-col items-center">
+            {userInfo.profile_img && (
+              <img
+                src={`${API_URL}${userInfo.profile_img}`}
+                alt="profile"
+                className="w-16 h-16 rounded-full mb-2"
+              />
+            )}
+            {userInfo.name && (
+              <div className="text-sm font-semibold">{userInfo.name}</div>
+            )}
+          </div>
         )}
 
         {/* 버튼 목록 */}
@@ -169,7 +171,6 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 w-full h-[61vh] bg-gradient-to-b from-[#FFFFFF] to-[#C6CBD0] z-0"></div>
 
     </div>
   );
